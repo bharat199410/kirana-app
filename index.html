@@ -140,6 +140,13 @@
       <h3 id="pname"></h3>
       <p id="pshop"></p>
       <p id="pphone"></p>
+      <p id="plocation"></p>
+
+      <a id="maplink" target="_blank">
+        <button style="width: 100%; margin-top: 10px">
+          📍 Open in Google Maps
+        </button>
+      </a>
       <button onclick="closePopup()">Close</button>
     </div>
 
@@ -217,6 +224,14 @@
         document.getElementById("pshop").innerText = "🏪 Shop: " + p.shop_name;
         document.getElementById("pphone").innerText =
           "📞 Call: " + p.shop_phone;
+
+        document.getElementById("plocation").innerText =
+          "📍 Location: " + p.lat + ", " + p.lng;
+
+        // Google Maps link
+        const url = `https://www.google.com/maps?q=${p.lat},${p.lng}`;
+
+        document.getElementById("maplink").href = url;
       }
 
       // close popup
