@@ -65,6 +65,10 @@ def add_product():
     lat = float(request.form["lat"])
     lng = float(request.form["lng"])
 
+    # ✅ NEW: dynamic shop data
+    shop_name = request.form["shop_name"]
+    shop_phone = request.form["shop_phone"]
+
     file = request.files["image"]
     filename = secure_filename(file.filename)
     filepath = os.path.join(UPLOAD_FOLDER, filename)
@@ -72,10 +76,6 @@ def add_product():
 
     discount = calculate_discount(expiry_date)
     discount_price = price * (1 - discount / 100)
-
-    # dummy shop (for now)
-    shop_name = "Local Kirana Store"
-    shop_phone = "9999999999"
 
     conn = sqlite3.connect("database.db")
     c = conn.cursor()

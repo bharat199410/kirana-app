@@ -75,11 +75,13 @@
         font-weight: 600;
         margin-top: 6px;
       }
+
       .price {
         text-decoration: line-through;
         color: gray;
         font-size: 12px;
       }
+
       .discount {
         color: red;
         font-weight: bold;
@@ -107,10 +109,6 @@
         box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
         display: none;
       }
-
-      .popup button {
-        margin-top: 10px;
-      }
     </style>
   </head>
 
@@ -118,6 +116,7 @@
     <header>⚡ Kirana Deals</header>
 
     <div class="container">
+      <!-- ADD PRODUCT -->
       <div class="box">
         <h3>Add Product</h3>
 
@@ -125,6 +124,10 @@
         <input id="price" placeholder="Price" />
         <input id="expiry" type="date" />
         <input id="image" type="file" />
+
+        <!-- ✅ NEW: shop inputs -->
+        <input id="shopName" placeholder="Shop Name" />
+        <input id="shopPhone" placeholder="Shop Phone" />
 
         <button onclick="addProduct()">Add Product</button>
       </div>
@@ -144,12 +147,17 @@
       let userLat = null;
       let userLng = null;
 
-      navigator.geolocation.getCurrentPosition((pos) => {
-        userLat = pos.coords.latitude;
-        userLng = pos.coords.longitude;
-        loadProducts();
-      });
+      // Get location
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          userLat = pos.coords.latitude;
+          userLng = pos.coords.longitude;
+          loadProducts();
+        },
+        () => alert("Enable location access")
+      );
 
+      // ---------------- ADD PRODUCT ----------------
       async function addProduct() {
         const file = document.getElementById("image").files[0];
 
@@ -161,6 +169,13 @@
         formData.append("lat", userLat);
         formData.append("lng", userLng);
 
+        // ✅ dynamic shop data
+        formData.append("shop_name", document.getElementById("shopName").value);
+        formData.append(
+          "shop_phone",
+          document.getElementById("shopPhone").value
+        );
+
         await fetch("http://127.0.0.1:5000/add-product", {
           method: "POST",
           body: formData,
@@ -169,6 +184,7 @@
         loadProducts();
       }
 
+      // ---------------- LOAD PRODUCTS ----------------
       async function loadProducts() {
         const res = await fetch("http://127.0.0.1:5000/products");
         const products = await res.json();
@@ -180,6 +196,7 @@
           div.innerHTML += `
             <div class="card">
                 <img src="http://127.0.0.1:5000/${p.image_url}">
+
                 <div class="name">${p.name}</div>
                 <div class="price">₹${p.price}</div>
                 <div class="discount">₹${p.discount_price.toFixed(2)}</div>
@@ -192,15 +209,17 @@
         });
       }
 
-      // RESERVE POPUP
+      // ---------------- RESERVE POPUP ----------------
       function reserve(p) {
         document.getElementById("popup").style.display = "block";
+
         document.getElementById("pname").innerText = "🛒 " + p.name;
         document.getElementById("pshop").innerText = "🏪 Shop: " + p.shop_name;
         document.getElementById("pphone").innerText =
           "📞 Call: " + p.shop_phone;
       }
 
+      // close popup
       function closePopup() {
         document.getElementById("popup").style.display = "none";
       }
